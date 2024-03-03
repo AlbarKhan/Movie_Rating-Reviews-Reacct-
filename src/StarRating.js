@@ -4,7 +4,6 @@ const containerStyle = {
   display: "flex",
   alignItems: "center",
   // gap: "16px",
-  border: "1px solid",
   padding: "0px",
 };
 
@@ -12,7 +11,6 @@ const starContainerStyle = {
   display: "flex",
   gap: "1px",
   cursor: "pointer",
-  border: "1px solid",
 };
 
 StarRating.propTypes = {
