@@ -50,11 +50,16 @@ const tempWatchedData = [
 const ApiKey = "5cd151cc";
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  // const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Loading...");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState("");
+
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem("watched");
+    return JSON.parse(storedValue);
+  });
 
   function handleSelectedID(id) {
     setSelectedId((selectedId) => (selectedId === id ? null : id));
@@ -66,6 +71,10 @@ export default function App() {
 
   function hanldeAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
+    // localStorage.setItem(
+    //   "watched",
+    //   JSON.stringify([...watched, movie])
+    // );
   }
 
   function handleDeleteWatched(id) {
@@ -74,6 +83,13 @@ export default function App() {
   // function handleDeleteWatched(id) {
   //   setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   // }
+
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
   useEffect(
     function () {
       const controller = new AbortController();
@@ -103,6 +119,7 @@ export default function App() {
           }
         }
       }
+      handleCloseMovie();
       getMovies();
 
       return function () {
@@ -238,6 +255,23 @@ function MovieDetail({ selectedId, onCLoseMovie, onAddWatched, watched }) {
     onAddWatched(newWatchedMovie);
     onCLoseMovie();
   }
+
+  useEffect(
+    function () {
+      function callBack(e) {
+        if (e.code === "Escape") {
+          onCLoseMovie();
+          console.log("close Movie");
+        }
+      }
+      document.addEventListener("keydown", callBack);
+
+      return function () {
+        document.removeEventListener("keydown", callBack);
+      };
+    },
+    [onCLoseMovie]
+  );
   useEffect(
     function () {
       async function getMovieDetails() {
